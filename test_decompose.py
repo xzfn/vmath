@@ -9,9 +9,14 @@ if __name__ == '__main__':
                     Quaternion.from_euler_angles(Vector(-1.0, -2.0, 1.6)),
                     Vector(3.0, 3.0, 3.0))
 
-    xf3 = xf1 * xf2
     print(xf1)
     print(xf2)
+
+    # Transform multiplication shortcut
+    xf3 = xf1 * xf2
     print(xf3)
+
+    # To matrix, multiply, decompose back to Transform
+    # should yield the same result as the above shortcut
     xf4 = (xf1.to_matrix() * xf2.to_matrix()).decompose()
     print(xf4)
