@@ -1,10 +1,10 @@
 
 import math
 
-__all__ = ['Vector', 'Matrix', 'Quaternion', 'Transform']
+__all__ = ['Vector3', 'Matrix4', 'Quaternion', 'Transform']
 
 
-class Vector(object):
+class Vector3(object):
     __slots__ = ('x', 'y', 'z')
 
     def __init__(self, x=0.0, y=0.0, z=0.0):
@@ -13,7 +13,7 @@ class Vector(object):
         self.z = z
 
     def __copy__(self):
-        return Vector(self.x, self.y, self.z)
+        return Vector3(self.x, self.y, self.z)
 
     copy = __copy__
 
@@ -30,7 +30,7 @@ class Vector(object):
         bx = other.x
         by = other.y
         bz = other.z
-        return Vector(ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx)
+        return Vector3(ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx)
 
     def normalize(self):
         l = self.length()
@@ -50,7 +50,7 @@ class Vector(object):
         return self.x == other.x and self.y == other.y and self.z == other.z
 
     def __add__(self, other):
-        return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
+        return Vector3(self.x + other.x, self.y + other.y, self.z + other.z)
 
     def __iadd__(self, other):
         self.x += other.x
@@ -59,7 +59,7 @@ class Vector(object):
         return self
 
     def __mul__(self, n):
-        return Vector(self.x * n, self.y * n, self.z * n)
+        return Vector3(self.x * n, self.y * n, self.z * n)
 
     def __imul__(self, n):
         self.x *= n
@@ -70,7 +70,7 @@ class Vector(object):
     __rmul__ = __mul__
 
     def __sub__(self, other):
-        return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
+        return Vector3(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def __isub__(self, other):
         self.x -= other.x
@@ -79,14 +79,14 @@ class Vector(object):
         return self
 
     def __neg__(self):
-        return Vector(-self.x, -self.y, -self.z)
+        return Vector3(-self.x, -self.y, -self.z)
 
     def __repr__(self):
-        return 'Vector({:0.4f}, {:0.4f}, {:0.4f})'.format(self.x, self.y, self.z)
+        return 'Vector3({:0.4f}, {:0.4f}, {:0.4f})'.format(self.x, self.y, self.z)
 
 
-class Matrix(object):
-    """Column major matrix.
+class Matrix4(object):
+    """Column major matrix4.
 
     m00, m01, m02, m03 is the first column.
     """
@@ -168,15 +168,15 @@ class Matrix(object):
         cm32 = am02 * bm30 + am12 * bm31 + am22 * bm32 + am32 * bm33
         cm33 = am03 * bm30 + am13 * bm31 + am23 * bm32 + am33 * bm33
 
-        return Matrix(cm00, cm01, cm02, cm03, cm10, cm11, cm12, cm13, cm20, cm21, cm22, cm23, cm30, cm31, cm32, cm33)
+        return Matrix4(cm00, cm01, cm02, cm03, cm10, cm11, cm12, cm13, cm20, cm21, cm22, cm23, cm30, cm31, cm32, cm33)
 
     def __repr__(self):
-        return 'Matrix({:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f})'.format(
+        return 'Matrix4({:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f})'.format(
             self.m00, self.m01, self.m02, self.m03, self.m10, self.m11, self.m12, self.m13,
             self.m20, self.m21, self.m22, self.m23, self.m30, self.m31, self.m32, self.m33)
 
     def __str__(self):
-        return 'Matrix<{:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}\n       {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}\n       {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}\n       {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}>'.format(
+        return 'Matrix4<{:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}\n       {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}\n       {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}\n       {:0.4f}, {:0.4f}, {:0.4f}, {:0.4f}>'.format(
             self.m00, self.m10, self.m20, self.m30,
             self.m01, self.m11, self.m21, self.m31,
             self.m02, self.m12, self.m22, self.m32,
@@ -190,9 +190,9 @@ class Matrix(object):
         nx = self.m00 * x + self.m10 * y + self.m20 * z + self.m30
         ny = self.m01 * x + self.m11 * y + self.m21 * z + self.m31
         nz = self.m02 * x + self.m12 * y + self.m22 * z + self.m32
-        return Vector(nx, ny, nz)
+        return Vector3(nx, ny, nz)
 
-    def transform_vector(self, v):
+    def transform_vector3(self, v):
         # ignore last row
         x = v.x
         y = v.y
@@ -200,7 +200,7 @@ class Matrix(object):
         nx = self.m00 * x + self.m10 * y + self.m20 * z
         ny = self.m01 * x + self.m11 * y + self.m21 * z
         nz = self.m02 * x + self.m12 * y + self.m22 * z
-        return Vector(nx, ny, nz)
+        return Vector3(nx, ny, nz)
 
     def project_point(self, p):
         x = p.x
@@ -210,14 +210,14 @@ class Matrix(object):
         ny = self.m01 * x + self.m11 * y + self.m21 * z + self.m31
         nz = self.m02 * x + self.m12 * y + self.m22 * z + self.m32
         nw = self.m03 * x + self.m13 * y + self.m23 * z + self.m33
-        return Vector(nx, ny, nz) * (1.0 / nw)
+        return Vector3(nx, ny, nz) * (1.0 / nw)
 
     def decompose(self):
-        translation = Vector(self.m30, self.m31, self.m32)
-        axis_x = Vector(self.m00, self.m01, self.m02)
-        axis_y = Vector(self.m10, self.m11, self.m12)
-        axis_z = Vector(self.m20, self.m21, self.m22)
-        scale = Vector(axis_x.length(), axis_y.length(), axis_z.length())
+        translation = Vector3(self.m30, self.m31, self.m32)
+        axis_x = Vector3(self.m00, self.m01, self.m02)
+        axis_y = Vector3(self.m10, self.m11, self.m12)
+        axis_z = Vector3(self.m20, self.m21, self.m22)
+        scale = Vector3(axis_x.length(), axis_y.length(), axis_z.length())
         axis_x.normalize()
         axis_y.normalize()
         axis_z.normalize()
@@ -226,7 +226,7 @@ class Matrix(object):
 
     def inversed(self):
         # TRS only
-        return self.decompose().inversed().to_matrix()
+        return self.decompose().inversed().to_matrix4()
 
     def set_translation(self, translation):
         self.m30 = translation.x
@@ -250,19 +250,19 @@ class Matrix(object):
 
     @staticmethod
     def from_translation(translation):
-        return Matrix(m30=translation.x, m31=translation.y, m32=translation.z)
+        return Matrix4(m30=translation.x, m31=translation.y, m32=translation.z)
 
     @staticmethod
     def from_rotation(rotation):
-        return rotation.to_matrix()
+        return rotation.to_matrix4()
 
     @staticmethod
     def from_angle_axis(angle, axis):
-        return Matrix.from_rotation(Quaternion.from_angle_axis(angle, axis))
+        return Matrix4.from_rotation(Quaternion.from_angle_axis(angle, axis))
 
     @staticmethod
     def from_scale(scale):
-        return Matrix(m00=scale.x, m11=scale.y, m22=scale.z)
+        return Matrix4(m00=scale.x, m11=scale.y, m22=scale.z)
 
     @staticmethod
     def from_look_at(eye, center, up):
@@ -283,7 +283,7 @@ class Matrix(object):
         m30 = -side.dot(eye)
         m31 = -camup.dot(eye)
         m32 = forward.dot(eye)
-        return Matrix(m00, m01, m02, 0.0, m10, m11, m12, 0.0, m20, m21, m22, 0.0, m30, m31, m32, 1.0)
+        return Matrix4(m00, m01, m02, 0.0, m10, m11, m12, 0.0, m20, m21, m22, 0.0, m30, m31, m32, 1.0)
 
     @staticmethod
     def from_ortho(left, right, bottom, top, near, far):
@@ -293,7 +293,7 @@ class Matrix(object):
         m30 = -(right + left) / (right - left)
         m31 = -(top + bottom) / (top - bottom)
         m32 = -near / (far - near)
-        return Matrix(m00=m00, m11=m11, m22=m22, m30=m30, m31=m31, m32=m32)
+        return Matrix4(m00=m00, m11=m11, m22=m22, m30=m30, m31=m31, m32=m32)
 
     @staticmethod
     def from_perspective(fov, aspect, near, far):
@@ -304,7 +304,7 @@ class Matrix(object):
         m23 = -1.0
         m32 = -(2.0 * far * near) / (far - near)
         m33 = 0.0
-        return Matrix(m00=m00, m11=m11, m22=m22, m23=m23, m32=m32, m33=m33)
+        return Matrix4(m00=m00, m11=m11, m22=m22, m23=m23, m32=m32, m33=m33)
 
 
 class Quaternion(object):
@@ -402,14 +402,14 @@ class Quaternion(object):
         m21 = 2.0 * (qyz - qwx)
         m22 = 1.0 - 2.0 * (qxx + qyy)
 
-        axis_x = Vector(m00, m01, m02)
-        axis_y = Vector(m10, m11, m12)
-        axis_z = Vector(m20, m21, m22)
+        axis_x = Vector3(m00, m01, m02)
+        axis_y = Vector3(m10, m11, m12)
+        axis_z = Vector3(m20, m21, m22)
         return (axis_x, axis_y, axis_z)
 
-    def to_matrix(self):
+    def to_matrix4(self):
         axis_x, axis_y, axis_z = self.to_axes()
-        return Matrix(axis_x.x, axis_x.y, axis_x.z, 0.0, axis_y.x, axis_y.y, axis_y.z, 0.0,
+        return Matrix4(axis_x.x, axis_x.y, axis_x.z, 0.0, axis_y.x, axis_y.y, axis_y.z, 0.0,
             axis_z.x, axis_z.y, axis_z.z, 0.0, 0.0, 0.0, 0.0, 1.0)
 
     def angle_axis(self):
@@ -419,10 +419,10 @@ class Quaternion(object):
         w = self.w
         t1 = 1.0 - w * w
         if t1 <= 0.0:
-            return (0.0, Vector(0.0, 0.0, 1.0))
+            return (0.0, Vector3(0.0, 0.0, 1.0))
         angle = math.atan2(x * x + y * y + z * z, w) * 2.0
         t2 = 1.0 / math.sqrt(t1)
-        return (angle, Vector(x * t2, y * t2, z * t2))
+        return (angle, Vector3(x * t2, y * t2, z * t2))
 
     def euler_angles(self):
         # (pitch, yaw, roll), euler order y-x-z
@@ -448,7 +448,7 @@ class Quaternion(object):
         cosy_cosp = 1.0 - 2.0 * (yy + zz)
         yaw = math.atan2(siny_cosp, cosy_cosp)
 
-        return Vector(pitch, yaw, roll)
+        return Vector3(pitch, yaw, roll)
 
     def conjugated(self):
         return Quaternion(self.w, -self.x, -self.y, -self.z)
@@ -461,10 +461,10 @@ class Quaternion(object):
         rmagsqr = 1.0 / (x * x + y * y + z * z + w * w)
         return Quaternion(self.w * rmagsqr, -self.x * rmagsqr, -self.y * rmagsqr, -self.z * rmagsqr)
 
-    def transform_vector(self, v):
+    def transform_vector3(self, v):
         vq = Quaternion(0.0, v.x, v.y, v.z)
         q_v_qi = self * vq * self.inversed()
-        return Vector(q_v_qi.x, q_v_qi.y, q_v_qi.z)
+        return Vector3(q_v_qi.x, q_v_qi.y, q_v_qi.z)
 
     @staticmethod
     def from_euler_angles(euler_angles):
@@ -550,38 +550,38 @@ class Quaternion(object):
 
 
 class Transform(object):
-    def __init__(self, translation=Vector(0.0, 0.0, 0.0), rotation=Quaternion(), scale=Vector(1.0, 1.0, 1.0)):
+    def __init__(self, translation=Vector3(0.0, 0.0, 0.0), rotation=Quaternion(), scale=Vector3(1.0, 1.0, 1.0)):
         self.translation = translation.copy()
         self.rotation = rotation.copy()
         self.scale = scale.copy()
 
-    def to_matrix(self):
+    def to_matrix4(self):
         # T * R * S
         axis_x, axis_y, axis_z = self.rotation.to_axes()
         axis_x *= self.scale.x
         axis_y *= self.scale.y
         axis_z *= self.scale.z
         translation = self.translation
-        return Matrix(axis_x.x, axis_x.y, axis_x.z, 0.0, axis_y.x, axis_y.y, axis_y.z, 0.0,
+        return Matrix4(axis_x.x, axis_x.y, axis_x.z, 0.0, axis_y.x, axis_y.y, axis_y.z, 0.0,
             axis_z.x, axis_z.y, axis_z.z, 0.0, translation.x, translation.y, translation.z, 1.0)
 
     @staticmethod
-    def from_matrix(m):
+    def from_matrix4(m):
         return m.decompose()
 
     def transform_point(self, p):
-        return self.to_matrix().transform_point(p)
+        return self.to_matrix4().transform_point(p)
 
-    def transform_vector(self, v):
-        return self.to_matrix().transform_vector(v)
+    def transform_vector3(self, v):
+        return self.to_matrix4().transform_vector3(v)
 
     def inversed(self):
         inv_translation = -self.translation
         inv_rotation = self.rotation.inversed()
-        inv_scale = Vector(1.0 / self.scale.x, 1.0 / self.scale.y, 1.0 / self.scale.z)
-        inv_mT = Matrix.from_translation(inv_translation)
-        inv_mR = Matrix.from_rotation(inv_rotation)
-        inv_mS = Matrix.from_scale(inv_scale)
+        inv_scale = Vector3(1.0 / self.scale.x, 1.0 / self.scale.y, 1.0 / self.scale.z)
+        inv_mT = Matrix4.from_translation(inv_translation)
+        inv_mR = Matrix4.from_rotation(inv_rotation)
+        inv_mS = Matrix4.from_scale(inv_scale)
         inv_m = inv_mS * inv_mR * inv_mT
         return inv_m.decompose()
 
@@ -592,13 +592,21 @@ class Transform(object):
         t2 = other.translation
         r2 = other.rotation
         s2 = other.scale
-        t3 = r1.transform_vector(Vector(s1.x * t2.x, s1.y * t2.y, s1.z * t2.z)) + t1
+        t3 = r1.transform_vector3(Vector3(s1.x * t2.x, s1.y * t2.y, s1.z * t2.z)) + t1
         r3 = r1 * r2
-        s3 = Vector(s1.x * s2.x, s1.y * s2.y, s1.z * s2.z)
+        s3 = Vector3(s1.x * s2.x, s1.y * s2.y, s1.z * s2.z)
         return Transform(t3, r3, s3)
 
     def __repr__(self):
         return 'Transform({}, {}, {})'.format(self.translation, self.rotation, self.scale)
+
+
+_have_ext = False
+try:
+    from _vmath import *
+    _have_ext = True
+except ImportError:
+    pass
 
 
 def _test_euler(euler):
@@ -608,25 +616,25 @@ def _test_euler(euler):
 
 
 def _test():
-    v1 = Vector(1.0, 1.0, 1.0)
-    v2 = Vector(1.0, 2.0, 3.0)
+    v1 = Vector3(1.0, 1.0, 1.0)
+    v2 = Vector3(1.0, 2.0, 3.0)
     print(v1, v2)
     print(v1 * 10)
     print(10 * v1)
     print(-v1 + v2)
-    m = Matrix()
+    m = Matrix4()
     print(m)
 
-    print(Matrix.from_ortho(0, 800, 0, 600, -1.0, 1.0))
-    print(Matrix.from_perspective(1.0, 1.6, 0.1, 1000))
+    print(Matrix4.from_ortho(0, 800, 0, 600, -1.0, 1.0))
+    print(Matrix4.from_perspective(1.0, 1.6, 0.1, 1000))
 
-    _test_euler(Vector(0.1, 0.2, 0.3))
-    _test_euler(Vector(1.1, 6.0, 2.0))
+    _test_euler(Vector3(0.1, 0.2, 0.3))
+    _test_euler(Vector3(1.1, 6.0, 2.0))
 
-    q = Quaternion.from_euler_angles(Vector(0.2, 4.0, 3.0))
-    q = Quaternion.from_angle_axis(0.235, Vector(0.0, 1.0, 0.0))
+    q = Quaternion.from_euler_angles(Vector3(0.2, 4.0, 3.0))
+    q = Quaternion.from_angle_axis(0.235, Vector3(0.0, 1.0, 0.0))
     print(q.euler_angles())
-    m = q.to_matrix()
+    m = q.to_matrix4()
     print(m)
     q2 = m.decompose().rotation
     print(q, q.euler_angles())
@@ -635,22 +643,22 @@ def _test():
     print(q * q.inversed())
     print(q2 * q2.conjugated())
 
-    t = Transform(Vector(1.0, 2.0, 3.0), Quaternion.from_euler_angles(Vector(0.3, 0.5, 0.9)), Vector(2.0, 2.0, 2.0))
+    t = Transform(Vector3(1.0, 2.0, 3.0), Quaternion.from_euler_angles(Vector3(0.3, 0.5, 0.9)), Vector3(2.0, 2.0, 2.0))
     print(t)
     print(t.inversed())
     print(t * t.inversed())
 
-    eye = Vector(0.0, 0.0, -10.0)
-    at = Vector(1.0, 2.0, 3.0)
-    up = Vector(0.0, 1.0, 0.0)
-    m = Matrix()
+    eye = Vector3(0.0, 0.0, -10.0)
+    at = Vector3(1.0, 2.0, 3.0)
+    up = Vector3(0.0, 1.0, 0.0)
+    m = Matrix4()
     m.set_translation(eye)
     m.set_look_rotation((at - eye).normalized(), up)
     print(m)
-    print(Transform(eye, Quaternion.from_look_rotation((at - eye).normalized(), up)).to_matrix())
+    print(Transform(eye, Quaternion.from_look_rotation((at - eye).normalized(), up)).to_matrix4())
     print('---')
     print(m.inversed())
-    print(Matrix.from_look_at(eye, at, up))
+    print(Matrix4.from_look_at(eye, at, up))
 
 if __name__ == '__main__':
     _test()
