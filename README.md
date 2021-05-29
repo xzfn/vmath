@@ -22,6 +22,8 @@ Main source files comes from:
 + toy/glm_util.h
 + toy/glm_util.cpp
 
+## Documentation
+See src/wrap_vmath.cpp for interfaces. The pure python types are outdated and there is no documentation for now.
 
 ## Usage
 Main classes:
