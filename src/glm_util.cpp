@@ -1,9 +1,12 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "glm_util.h"
 
 #include <glm/mat3x3.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/string_cast.hpp>
-
+#include <glm/gtx/euler_angles.hpp>
 
 
 std::string to_string(const Transform& transform)
@@ -152,6 +155,66 @@ glm::vec3 quat_transform_vector(glm::quat q, glm::vec3 vector)
 glm::vec3 quat_transform_point(glm::quat q, glm::vec3 point)
 {
     return glm::mat3_cast(q) * point;
+}
+
+glm::vec3 quat_to_euler_angles(glm::quat q)
+{
+    // (pitch, yaw, roll), euler order y-x-z
+    // swap ZYX <->YXZ from Wikipedia Conversion_between_quaternions_and_Euler_angles
+    float w = q.w;
+    float x = q.z;
+    float y = q.x;
+    float z = q.y;
+    float xx = x * x;
+    float yy = y * y;
+    float zz = z * z;
+    float sinr_cosp = 2.0f * (w * x + y * z);
+    float cosr_cosp = 1.0f - 2.0f * (xx + yy);
+    float roll = std::atan2(sinr_cosp, cosr_cosp);
+    float sinp = 2.0f * (w * y - z * x);
+    float pitch;
+    if (std::abs(sinp) >= 1.0f) {
+        pitch = std::copysign(M_PI / 2.0f, sinp);
+    }
+    else {
+        pitch = std::asin(sinp);
+    }
+    float siny_cosp = 2.0f * (w * z + x * y);
+    float cosy_cosp = 1.0f - 2.0f * (yy + zz);
+    float yaw = std::atan2(siny_cosp, cosy_cosp);
+    return glm::vec3(pitch, yaw, roll);
+}
+
+glm::quat euler_angles_to_quat(glm::vec3 pitch_yaw_roll)
+{;
+    // (pitch, yaw, roll), euler order y-x-z
+    float hpitch = pitch_yaw_roll.x * 0.5f;
+    float hyaw = pitch_yaw_roll.y * 0.5f;
+    float hroll = pitch_yaw_roll.z * 0.5f;
+    float cy = std::cos(hyaw);
+    float sy = std::sin(hyaw);
+    float cp = std::cos(hpitch);
+    float sp = std::sin(hpitch);
+    float cr = std::cos(hroll);
+    float sr = std::sin(hroll);
+    // swap ZYX < ->YXZ from Wikipedia Conversion_between_quaternions_and_Euler_angles
+    float w = cy * cp * cr + sy * sp * sr;
+    float x = cy * cp * sr - sy * sp * cr;
+    float y = sy * cp * sr + cy * sp * cr;
+    float z = sy * cp * cr - cy * sp * sr;
+
+    // same as glm::quat_cast(glm::eulerAngleYXZ(pitch_yaw_roll.y, pitch_yaw_roll.x, pitch_yaw_roll.z));
+    return glm::quat(w, y, z, x);
+}
+
+glm::quat from_to_rotation_to_quat(glm::vec3 va, glm::vec3 vb)
+{
+    return glm::quat(va, vb);
+}
+
+glm::quat look_rotation_to_quat(glm::vec3 forward, glm::vec3 up)
+{
+    return glm::quatLookAt(forward, up);
 }
 
 Transform::Transform()

@@ -3,6 +3,7 @@
 #include <pybind11/stl.h>
 namespace py = pybind11;
 
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -98,12 +99,20 @@ void wrap_Quaternion(py::module_& m) {
 	t.def_readwrite("y", &glm::quat::y);
 	t.def_readwrite("z", &glm::quat::z);
 
-	t.def("normalize", [](glm::quat& self) {
-		return glm::normalize(self);
+	t.def("length", [](glm::quat& self) {
+		return glm::length(self);
 	});
+	t.def("length_squared", [](glm::quat& self) {
+		return self.w * self.w + self.x * self.x + self.y * self.y + self.z * self.z;
+	});
+
 	t.def("normalize_self", [](glm::quat& self) {
 		self = glm::normalize(self);
 	});
+	t.def("normalize", [](glm::quat& self) {
+		return glm::normalize(self);
+	});
+
 	t.def("slerp", [](glm::quat& self, glm::quat& other, float alpha) {
 		return glm::slerp(self, other, alpha);
 	});
@@ -128,6 +137,9 @@ void wrap_Quaternion(py::module_& m) {
 		glm::mat3 matrix3 = glm::mat3_cast(self);
 		return std::vector<glm::vec3>{ matrix3[0], matrix3[1], matrix3[2] };
 	});
+	t.def("to_matrix4", [](glm::quat& self) {
+		return glm::mat4_cast(self);
+	});
 	t.def_static("from_angle_axis", [](float angle, glm::vec3 axis) {
 		return glm::angleAxis(angle, axis);
 	});
@@ -135,6 +147,10 @@ void wrap_Quaternion(py::module_& m) {
 		glm::mat3 matrix3_(matrix3[0], matrix3[1], matrix3[2]);
 		return glm::quat_cast(matrix3_);
 	});
+	t.def("euler_angles", &quat_to_euler_angles);
+	t.def_static("from_euler_angles", &euler_angles_to_quat);
+	t.def_static("from_from_to_rotation", &from_to_rotation_to_quat);
+	t.def_static("from_look_rotation", &look_rotation_to_quat);
 
 	t.def("__mul__", [](glm::quat& self, glm::quat& other) {
 		return self * other;
@@ -234,15 +250,23 @@ void wrap_Matrix4(py::module_& m_) {
 	t.def("transform_vector", [](glm::mat4& self, glm::vec3 vector) {
 		return transform_vector(self, vector);
 	});
+	t.def("project_point", [](glm::mat4& self, glm::vec3 point) {
+		return project_point(self, point);
+	});
 	t.def("inverse", [](glm::mat4& self) {
 		return glm::inverse(self);
 	});
 	t.def("to_transform", [](glm::mat4& self) {
 		return mat4_to_transform(self);
 	});
-
 	t.def("__mul__", [](glm::mat4& self, glm::mat4& other) {
 		return self * other;
+	});
+	t.def_static("from_orthographic", [](float left, float right, float bottom, float top, float z_near, float z_far) {
+		return glm::ortho(left, right, bottom, top, z_near, z_far);
+	});
+	t.def("from_perspective", [](float fov, float aspect, float z_near, float z_far) {
+		return glm::perspective(fov, aspect, z_near, z_far);
 	});
 
 	t.def("__copy__", [](glm::mat4 self) {
@@ -294,6 +318,166 @@ void wrap_Transform(py::module_& m) {
 	});
 }
 
+void wrap_Vector2(py::module_& m) {
+	py::class_<glm::vec2> t(m, "Vector2");
+
+	t.def(py::init([]() {
+		return glm::vec2(0.0f, 0.0f);
+	}));
+	t.def(py::init<float, float>());
+
+	t.def_readwrite("x", &glm::vec2::x);
+	t.def_readwrite("y", &glm::vec2::y);
+
+	t.def("length", [](glm::vec2& self) {
+		return glm::length(self);
+	});
+	t.def("length_squared", [](glm::vec2& self) {
+		return self.x * self.x + self.y * self.y;
+	});
+	t.def("dot", [](glm::vec2& self, glm::vec2& other) {
+		return glm::dot(self, other);
+	});
+	t.def("normalize_self", [](glm::vec2& self) {
+		self = glm::normalize(self);
+	});
+	t.def("normalize", [](glm::vec2& self) {
+		glm::vec2 res = glm::normalize(self);
+		return res;
+	});
+
+	t.def("__eq__", [](glm::vec2& self, glm::vec2& other) {
+		return self == other;
+	});
+	t.def("__add__", [](glm::vec2& self, glm::vec2& other) {
+		return self + other;
+	});
+	t.def("__iadd__", [](glm::vec2& self, glm::vec2& other) {
+		self += other;
+		return self;
+	});
+	t.def("__mul__", [](glm::vec2& self, float n) {
+		return self * n;
+	});
+	t.def("__imul__", [](glm::vec2& self, float n) {
+		self *= n;
+		return self;
+	});
+	t.def("__rmul__", [](glm::vec2& self, float n) {
+		return self * n;
+	});
+	t.def("__sub__", [](glm::vec2& self, glm::vec2& other) {
+		return self - other;
+	});
+	t.def("__isub__", [](glm::vec2& self, glm::vec2& other) {
+		self -= other;
+		return self;
+	});
+	t.def("__neg__", [](glm::vec2& self) {
+		return -self;
+	});
+
+	t.def("__copy__", [](glm::vec2 self) {
+		return self;
+	});
+	t.def("copy", [](glm::vec2 self) {
+		return self;
+	});
+	t.def("__repr__", [](glm::vec2& self) {
+		return glm::to_string(self);
+	});
+}
+
+void wrap_Vector4(py::module_& m) {
+	py::class_<glm::vec4> t(m, "Vector4");
+
+	t.def(py::init([]() {
+		return glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	}));
+	t.def(py::init<float, float, float, float>());
+
+	t.def_readwrite("x", &glm::vec4::x);
+	t.def_readwrite("y", &glm::vec4::y);
+	t.def_readwrite("z", &glm::vec4::z);
+	t.def_readwrite("w", &glm::vec4::w);
+
+	t.def("length", [](glm::vec4& self) {
+		return glm::length(self);
+	});
+	t.def("length_squared", [](glm::vec4& self) {
+		return self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w;
+	});
+	t.def("dot", [](glm::vec4& self, glm::vec4& other) {
+		return glm::dot(self, other);
+	});
+	t.def("normalize_self", [](glm::vec4& self) {
+		self = glm::normalize(self);
+	});
+	t.def("normalize", [](glm::vec4& self) {
+		glm::vec4 res = glm::normalize(self);
+		return res;
+	});
+
+	t.def("__eq__", [](glm::vec4& self, glm::vec4& other) {
+		return self == other;
+	});
+	t.def("__add__", [](glm::vec4& self, glm::vec4& other) {
+		return self + other;
+	});
+	t.def("__iadd__", [](glm::vec4& self, glm::vec4& other) {
+		self += other;
+		return self;
+	});
+	t.def("__mul__", [](glm::vec4& self, float n) {
+		return self * n;
+	});
+	t.def("__imul__", [](glm::vec4& self, float n) {
+		self *= n;
+		return self;
+	});
+	t.def("__rmul__", [](glm::vec4& self, float n) {
+		return self * n;
+	});
+	t.def("__sub__", [](glm::vec4& self, glm::vec4& other) {
+		return self - other;
+	});
+	t.def("__isub__", [](glm::vec4& self, glm::vec4& other) {
+		self -= other;
+		return self;
+	});
+	t.def("__neg__", [](glm::vec4& self) {
+		return -self;
+	});
+
+	t.def("__copy__", [](glm::vec4 self) {
+		return self;
+	});
+	t.def("copy", [](glm::vec4 self) {
+		return self;
+	});
+	t.def("__repr__", [](glm::vec4& self) {
+		return glm::to_string(self);
+	});
+}
+
+void wrap_Ray(py::module_& m) {
+	py::class_<Ray> t(m, "Ray");
+
+	t.def(py::init<>());
+	t.def(py::init<glm::vec3, glm::vec3>());
+
+	t.def_readwrite("position", &Ray::position);
+	t.def_readwrite("direction", &Ray::direction);
+	t.def("__copy__", [](Ray self) {
+		return self;
+	});
+	t.def("copy", [](Ray self) {
+		return self;
+	});
+	t.def("__repr__", [](Ray& self) {
+		return "Ray(" + glm::to_string(self.position) + ", " + glm::to_string(self.direction) + ")";
+	});
+}
 
 void wrap_vmath(pybind11::module_& m)
 {
@@ -301,4 +485,7 @@ void wrap_vmath(pybind11::module_& m)
 	wrap_Quaternion(m);
 	wrap_Matrix4(m);
 	wrap_Transform(m);
+	wrap_Vector2(m);
+	wrap_Vector4(m);
+	wrap_Ray(m);
 }

@@ -64,6 +64,11 @@ glm::vec3 quat_axis_z(glm::quat q);
 glm::vec3 quat_transform_vector(glm::quat q, glm::vec3 vector);
 glm::vec3 quat_transform_point(glm::quat q, glm::vec3 point);
 
+glm::vec3 quat_to_euler_angles(glm::quat q);
+glm::quat euler_angles_to_quat(glm::vec3 pitch_yaw_roll);
+glm::quat from_to_rotation_to_quat(glm::vec3 va, glm::vec3 vb);
+glm::quat look_rotation_to_quat(glm::vec3 forward, glm::vec3 up);
+
 struct Ray {
 	glm::vec3 position{ VEC3_ZERO };
 	glm::vec3 direction{ VEC3_Z };

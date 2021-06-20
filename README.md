@@ -80,5 +80,13 @@ Checkout pip_install_debug.bat file. One need to provide GLM path to build the e
 ## TODO
 The interface of the types between the pure python module and extension module is somewhat different. Waiting to be fixed.
 
++ Vector3 (done)
++ Quaternion (done)
++ Matrix4 (done)
++ Transform (done)
++ Vector2
++ Vector4
++ Ray
+
 ## License
 MIT License.
