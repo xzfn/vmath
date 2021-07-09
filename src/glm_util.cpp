@@ -48,12 +48,16 @@ glm::vec3 project_point(glm::mat4 matrix, glm::vec3 point)
 
 Transform mat4_to_transform(glm::mat4 matrix)
 {
-    glm::vec3 scale;
-    glm::quat rotation;
-    glm::vec3 translation;
-    glm::vec3 skew;
-    glm::vec4 perspective;
-    glm::decompose(matrix, scale, rotation, translation, skew, perspective);
+    glm::vec3 axis_x = matrix[0];
+    glm::vec3 axis_y = matrix[1];
+    glm::vec3 axis_z = matrix[2];
+    glm::vec3 translation = matrix[3];
+    glm::vec3 scale(glm::length(axis_x), glm::length(axis_y), glm::length(axis_z));
+    axis_x = glm::normalize(axis_x);
+    axis_y = glm::normalize(axis_y);
+    axis_z = glm::normalize(axis_z);
+    glm::mat3 rotation_matrix(axis_x, axis_y, axis_z);
+    glm::quat rotation = glm::quat_cast(rotation_matrix);
     return Transform{
         translation,
         rotation,
