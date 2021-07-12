@@ -222,6 +222,72 @@ class Matrix4(object):
 
         return Matrix4(cm00, cm01, cm02, cm03, cm10, cm11, cm12, cm13, cm20, cm21, cm22, cm23, cm30, cm31, cm32, cm33)
 
+    def __add__(self, other):
+        return Matrix4(
+            self.m00 + other.m00, self.m01 + other.m01, self.m02 + other.m02, self.m03 + other.m03,
+            self.m10 + other.m10, self.m11 + other.m11, self.m12 + other.m12, self.m13 + other.m13,
+            self.m20 + other.m20, self.m21 + other.m21, self.m22 + other.m22, self.m23 + other.m23,
+            self.m30 + other.m30, self.m31 + other.m31, self.m32 + other.m32, self.m33 + other.m33,
+        )
+
+    def __iadd__(self, other):
+        self.m00 += other.m00
+        self.m01 += other.m01
+        self.m02 += other.m02
+        self.m03 += other.m03
+
+        self.m10 += other.m10
+        self.m11 += other.m11
+        self.m12 += other.m12
+        self.m13 += other.m13
+
+        self.m20 += other.m20
+        self.m21 += other.m21
+        self.m22 += other.m22
+        self.m23 += other.m23
+
+        self.m30 += other.m30
+        self.m31 += other.m31
+        self.m32 += other.m32
+        self.m33 += other.m33
+
+    def __sub__(self, other):
+        return Matrix4(
+            self.m00 - other.m00, self.m01 - other.m01, self.m02 - other.m02, self.m03 - other.m03,
+            self.m10 - other.m10, self.m11 - other.m11, self.m12 - other.m12, self.m13 - other.m13,
+            self.m20 - other.m20, self.m21 - other.m21, self.m22 - other.m22, self.m23 - other.m23,
+            self.m30 - other.m30, self.m31 - other.m31, self.m32 - other.m32, self.m33 - other.m33,
+        )
+
+    def __isub__(self, other):
+        self.m00 -= other.m00
+        self.m01 -= other.m01
+        self.m02 -= other.m02
+        self.m03 -= other.m03
+
+        self.m10 -= other.m10
+        self.m11 -= other.m11
+        self.m12 -= other.m12
+        self.m13 -= other.m13
+
+        self.m20 -= other.m20
+        self.m21 -= other.m21
+        self.m22 -= other.m22
+        self.m23 -= other.m23
+
+        self.m30 -= other.m30
+        self.m31 -= other.m31
+        self.m32 -= other.m32
+        self.m33 -= other.m33
+
+    def mul_scalar(self, s):
+        return Matrix4(
+            self.m00 * s, self.m01 * s, self.m02 * s, self.m03 * s,
+            self.m10 * s, self.m11 * s, self.m12 * s, self.m13 * s,
+            self.m20 * s, self.m21 * s, self.m22 * s, self.m23 * s,
+            self.m30 * s, self.m31 * s, self.m32 * s, self.m33 * s,
+        )
+
     @staticmethod
     def from_orthographic(left, right, bottom, top, near, far):
         m00 = 2.0 / (right - left)
