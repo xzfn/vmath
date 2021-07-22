@@ -25,8 +25,16 @@ def clamp(v, min_val, max_val):
 	return v
 
 def ping_pong(t):
-	# 0 - 1 - 0
+	# 0 / 1 \ 0
 	return 1.0 - abs(t * 2.0 - 1.0)
+
+def half_pause(t):
+	# 0 - 0 / 1 - 1
+	return clamp(t * 2.0 - 0.5, 0.0, 1.0)
+
+def half_pause_ping_pong(t):
+	# 0 - 0 / 1 - 1 \ 0 - 0
+	return clamp(ping_pong(t) * 2.0 - 0.5, 0.0, 1.0)
 
 def lerp_matrix(a, b, t):
 	return a + (b - a).mul_scalar(t)

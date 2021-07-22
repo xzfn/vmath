@@ -31,3 +31,6 @@ def bounce(a, b, t):
 		t = 1.0 - t
 	t *= 2.0
 	return a + (b - a) * t
+
+def complementary(c):
+	return Vector3(1.0, 1.0, 1.0) - c
