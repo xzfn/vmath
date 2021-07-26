@@ -1,3 +1,6 @@
+// #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+
+
 #include "wrap_vmath.h"
 
 #include <pybind11/stl.h>
@@ -256,12 +259,31 @@ void wrap_Matrix4(py::module_& m_) {
 	t.def("inverse", [](glm::mat4& self) {
 		return glm::inverse(self);
 	});
+	t.def("transpose", [](glm::mat4& self) {
+		return glm::transpose(self);
+	});
 	t.def("to_transform", [](glm::mat4& self) {
 		return mat4_to_transform(self);
 	});
 	t.def("__mul__", [](glm::mat4& self, glm::mat4& other) {
 		return self * other;
 	});
+	t.def("__add__", [](glm::mat4& self, glm::mat4& other) {
+		return self + other;
+	});
+	t.def("__iadd__", [](glm::mat4& self, glm::mat4& other) {
+		self += other;
+	});
+	t.def("__sub__", [](glm::mat4& self, glm::mat4& other) {
+		return self - other;
+	});
+	t.def("__isub__", [](glm::mat4& self, glm::mat4& other) {
+		self -= other;
+	});
+	t.def("mul_scalar", [](glm::mat4& self, float s) {
+		return self * s;
+	});
+
 	t.def_static("from_orthographic", [](float left, float right, float bottom, float top, float z_near, float z_far) {
 		return glm::ortho(left, right, bottom, top, z_near, z_far);
 	});
