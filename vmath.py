@@ -153,6 +153,29 @@ class Matrix4(object):
         # TODO TRS only for now
         return self.to_transform().inverse().to_matrix4()
 
+    def transpose(self):
+        m00 = self.m00
+        m01 = self.m01
+        m02 = self.m02
+        m03 = self.m03
+        m10 = self.m10
+        m11 = self.m11
+        m12 = self.m12
+        m13 = self.m13
+        m20 = self.m20
+        m21 = self.m21
+        m22 = self.m22
+        m23 = self.m23
+        m30 = self.m30
+        m31 = self.m31
+        m32 = self.m32
+        m33 = self.m33
+        return Matrix4(
+            m00, m10, m20, m30,
+            m01, m11, m21, m31,
+            m02, m12, m22, m32,
+            m03, m13, m23, m33)
+
     def to_transform(self):
         translation = Vector3(self.m30, self.m31, self.m32)
         axis_x = Vector3(self.m00, self.m01, self.m02)
