@@ -10,10 +10,13 @@ Should be useful for other pybind11 bindings that use glm types, the conversion 
 
 Types:
 
-+ vmath.Vector33 - glm::vec3
-+ vmath.Matrix44 - glm::mat4
-+ vmath.Quaternion - glm::quat
-+ vmath.Transform - Translation-Rotation-Scale blob, using vec3, quat, vec3
++ Vector3 - glm::vec3
++ Quaternion - glm::quat
++ Matrix4 - glm::mat4
++ Transform - translation-rotation-scale
++ Vector2 - glm::vec2
++ Vector4 - glm::vec4
++ Ray - position-direction
 
 Main source files comes from:
 
@@ -23,7 +26,9 @@ Main source files comes from:
 + toy/glm_util.cpp
 
 ## Documentation
-See src/wrap_vmath.cpp for interfaces. The pure python types are outdated and there is no documentation for now.
+See vmath.py for interfaces.
+
+See src/wrap_vmath.cpp for pybind11 binding code.
 
 ## Usage
 Main classes:
@@ -77,16 +82,8 @@ The conversion should just works thanks to internal pybind11 mechanisms, but wit
 ## Build
 Checkout pip_install_debug.bat file. One need to provide GLM path to build the extension.
 
-## TODO
-The interface of the types between the pure python module and extension module is somewhat different. Waiting to be fixed.
-
-+ Vector3 (done)
-+ Quaternion (done)
-+ Matrix4 (done)
-+ Transform (done)
-+ Vector2
-+ Vector4
-+ Ray
+## Note
+The interface of the types between the pure python module and extension module is somewhat different.
 
 ## License
 MIT License.

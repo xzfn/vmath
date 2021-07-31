@@ -739,6 +739,68 @@ class Vector2:
         self.x = x
         self.y = y
 
+    def length(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2)
+
+    def length_squared(self):
+        return self.x ** 2 + self.y ** 2
+
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y
+
+    def normalize_self(self):
+        l = self.length()
+        if l == 0.0:
+            self.x = 1.0
+            self.y = 0.0
+        else:
+            self *= 1.0 / l
+
+    def normalize(self):
+        v = self.copy()
+        v.normalize_self()
+        return v
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __add__(self, other):
+        return Vector3(self.x + other.x, self.y + other.y)
+
+    def __iadd__(self, other):
+        self.x += other.x
+        self.y += other.y
+        return self
+
+    def __mul__(self, n):
+        return Vector3(self.x * n, self.y * n)
+
+    def __imul__(self, n):
+        self.x *= n
+        self.y *= n
+        return self
+
+    __rmul__ = __mul__
+
+    def __sub__(self, other):
+        return Vector3(self.x - other.x, self.y - other.y)
+
+    def __isub__(self, other):
+        self.x -= other.x
+        self.y -= other.y
+        return self
+
+    def __neg__(self):
+        return Vector3(-self.x, -self.y)
+
+    def __copy__(self):
+        return Vector3(self.x, self.y)
+
+    copy = __copy__
+
+    def __repr__(self):
+        return 'Vector2({:0.4f}, {:0.4f})'.format(self.x, self.y)
+
 
 class Vector4:
     __slots__ = ('x', 'y', 'z', 'w')
@@ -748,44 +810,123 @@ class Vector4:
         self.z = z
         self.w = w
 
+    def length(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2 + self.w ** 2)
+
+    def length_squared(self):
+        return self.x ** 2 + self.y ** 2 + self.z ** 2 + self.w ** 2
+
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
+
+    def normalize_self(self):
+        l = self.length()
+        if l == 0.0:
+            self.x = 1.0
+            self.y = 0.0
+            self.z = 0.0
+            self.w = 0.0
+        else:
+            self *= 1.0 / l
+
+    def normalize(self):
+        v = self.copy()
+        v.normalize_self()
+        return v
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.z == other.z and self.w == other.w
+
+    def __add__(self, other):
+        return Vector3(self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
+
+    def __iadd__(self, other):
+        self.x += other.x
+        self.y += other.y
+        self.z += other.z
+        self.w += other.w
+        return self
+
+    def __mul__(self, n):
+        return Vector3(self.x * n, self.y * n, self.z * n, self.w * n)
+
+    def __imul__(self, n):
+        self.x *= n
+        self.y *= n
+        self.z *= n
+        self.w *= n
+        return self
+
+    __rmul__ = __mul__
+
+    def __sub__(self, other):
+        return Vector3(self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
+
+    def __isub__(self, other):
+        self.x -= other.x
+        self.y -= other.y
+        self.z -= other.z
+        self.w -= other.w
+        return self
+
+    def __neg__(self):
+        return Vector3(-self.x, -self.y, -self.z, -self.w)
+
+    def __copy__(self):
+        return Vector3(self.x, self.y, self.z, self.w)
+
+    copy = __copy__
+
+    def __repr__(self):
+        return 'Vector4({:0.4f}, {:0.4f}, {:0.4f}, {:0.4f})'.format(self.x, self.y, self.z, self.w)
+
 
 class Ray:
     __slots__ = ('position', 'direction')
-    def __init__(self, position, direction):
-        self.position = position
-        self.direction = direction
+    def __init__(self, position=Vector3(0.0, 0.0, 0.0), direction=Vector3(0.0, 0.0, 1.0)):
+        self.position = position.copy()
+        self.direction = direction.copy()
+
+    def __copy__(self):
+        return Ray(self.position, self.direction)
+
+    copy = __copy__
+
+    def __repr__(self):
+        return 'Ray({}, {})'.format(self.position, self.direction)
 
 
-_py_Vector3 = Vector3
-_py_Matrix4 = Matrix4
-_py_Transform = Transform
-_py_Quaternion = Quaternion
+_py_vmath_types = {typename: globals()[typename] for typename in __all__}
 
 
 _have_ext = False
 try:
     from _vmath import *
     _have_ext = True
-    _c_Vector3 = Vector3
-    _c_Matrix4 = Matrix4
-    _c_Transform = Transform
-    _c_Quaternion = Quaternion
+    _c_vmath_types = {typename: globals()[typename] for typename in __all__}
 except ImportError:
     pass
 
+
+def have_ext():
+    return _have_ext
+
+
+def _use_types(types):
+    global Vector3, Matrix4, Transform, Quaternion, Vector2, Vector4, Ray
+    d = globals()
+    for typename in __all__:
+        type_ = types[typename]
+        d[typename] = type_
+
+
 def use_py_types():
-    global Vector3, Matrix4, Transform, Quaternion
-    Vector3 = _py_Vector3
-    Matrix4 = _py_Matrix4
-    Transform = _py_Transform
-    Quaternion = _py_Quaternion
+    _use_types(_py_vmath_types)
+
 
 def use_c_types():
-    global Vector3, Matrix4, Transform, Quaternion
-    Vector3 = _c_Vector3
-    Matrix4 = _c_Matrix4
-    Transform = _c_Transform
-    Quaternion = _c_Quaternion
+    _use_types(_c_vmath_types)
+
 
 def _test_euler(euler):
     q = Quaternion.from_euler_angles(euler)
