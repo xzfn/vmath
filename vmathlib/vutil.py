@@ -38,3 +38,22 @@ def half_pause_ping_pong(t):
 
 def lerp_matrix(a, b, t):
 	return a + (b - a).mul_scalar(t)
+
+
+def alpha_ease_none(alpha, exp):
+	return alpha
+
+
+def alpha_ease_in(alpha, exp):
+	return math.pow(alpha, exp)
+
+
+def alpha_ease_out(alpha, exp):
+	return 1.0 - math.pow(1.0 - alpha, exp)
+
+
+def alpha_ease_in_out(alpha, exp):
+	if alpha < 0.5:
+		return alpha_ease_in(alpha * 2.0, exp) * 0.5
+	else:
+		return alpha_ease_out(alpha * 2.0 - 1.0, exp) * 0.5 + 0.5
