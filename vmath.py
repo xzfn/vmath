@@ -182,9 +182,9 @@ class Matrix4(object):
         axis_y = Vector3(self.m10, self.m11, self.m12)
         axis_z = Vector3(self.m20, self.m21, self.m22)
         scale = Vector3(axis_x.length(), axis_y.length(), axis_z.length())
-        axis_x.normalize()
-        axis_y.normalize()
-        axis_z.normalize()
+        axis_x.normalize_self()
+        axis_y.normalize_self()
+        axis_z.normalize_self()
         rotation = Quaternion.from_matrix3((axis_x, axis_y, axis_z))
         return Transform(translation, rotation, scale)
 
@@ -387,9 +387,9 @@ class Matrix4(object):
     @staticmethod
     def from_look_at(eye, center, up):
         forward = center - eye
-        forward.normalize()
+        forward.normalize_self()
         side = forward.cross(up)
-        side.normalize()
+        side.normalize_self()
         camup = side.cross(forward)
         m00 = side.x
         m10 = side.y
