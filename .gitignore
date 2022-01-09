@@ -138,3 +138,6 @@ temp_*
 
 # VSCode
 .vscode
+
+# lua
+build_lua

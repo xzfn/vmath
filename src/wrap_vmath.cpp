@@ -287,7 +287,7 @@ void wrap_Matrix4(py::module_& m_) {
 	t.def_static("from_orthographic", [](float left, float right, float bottom, float top, float z_near, float z_far) {
 		return glm::ortho(left, right, bottom, top, z_near, z_far);
 	});
-	t.def("from_perspective", [](float fov, float aspect, float z_near, float z_far) {
+	t.def_static("from_perspective", [](float fov, float aspect, float z_near, float z_far) {
 		return glm::perspective(fov, aspect, z_near, z_far);
 	});
 
