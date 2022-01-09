@@ -5,7 +5,9 @@ from pybind11.setup_helpers import Pybind11Extension
 ext_modules = [
     Pybind11Extension(
         '_vmath',
-        sorted(glob('src/*.cpp')),
+        [
+            'src/main.cpp', 'src/glm_util.cpp', 'src/wrap_vmath.cpp'
+        ],
     ),
 ]
 
