@@ -67,7 +67,6 @@ Transform mat4_to_transform(glm::mat4 matrix)
 
 glm::mat4 transform_to_mat4(const Transform& transform)
 {
-    glm::mat4 res;
     glm::mat4 scale_mat = glm::scale(glm::mat4(1.0f), transform.scale);
     glm::mat4 rotation_mat = glm::mat4_cast(transform.rotation);
     glm::mat4 translation_mat = glm::translate(glm::mat4(1.0f), transform.translation);
@@ -113,7 +112,6 @@ RigidTransform mat4_to_rigid_transform(glm::mat4 matrix)
 }
 
 glm::mat4 rigid_transform_to_mat4(const RigidTransform& rigid_transform) {
-    glm::mat4 res;
     glm::mat4 rotation_mat = glm::mat4_cast(rigid_transform.rotation);
     glm::mat4 translation_mat = glm::translate(glm::mat4(1.0f), rigid_transform.translation);
     return translation_mat * rotation_mat;
@@ -178,7 +176,7 @@ glm::vec3 quat_to_euler_angles(glm::quat q)
     float sinp = 2.0f * (w * y - z * x);
     float pitch;
     if (std::abs(sinp) >= 1.0f) {
-        pitch = std::copysign(M_PI / 2.0f, sinp);
+        pitch = std::copysign((float)M_PI / 2.0f, sinp);
     }
     else {
         pitch = std::asin(sinp);
